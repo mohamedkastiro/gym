@@ -1,3 +1,3 @@
 
 # Gym Equipment Manager
-# This project uses polymorphism to handle various types of gym equipment. Each equipment type (like dumbbells, barbells, and treadmills) is managed through a common interface. Workout plans dynamically calculate costs by combining different equipment types, showcasing the flexibility of polymorphism in managing gym routines.
+# This project uses polymorphism to handle various types of gym equipment. Each equipment type (like dumbbells, barbells, and treadmills) is managed through a common interface.the polymorphic behavior is in the workout plan where you can easily make a new workout plan for the client each plan selling a speciefic amount of related gym equipment.

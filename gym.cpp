@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <stdexcept>
 
 using namespace std;
 
@@ -57,6 +58,45 @@ public:
     }
 };
 
+class Treadmill : public GymEquipment {
+private:
+    double price;
+
+public:
+    Treadmill() {
+        price = 1000.0;
+    }
+
+    double getPrice() const override {
+        return price;
+    }
+
+    double getWeight() const override {
+        return 0.0; // Treadmill does not have weight
+    }
+};
+
+class ExerciseBike : public GymEquipment {
+private:
+    double price;
+
+public:
+    ExerciseBike(int resistanceLevel) {
+        if (resistanceLevel < 1 || resistanceLevel > 3) {
+            throw invalid_argument("Invalid resistance level for Exercise Bike");
+        }
+        price = resistanceLevel * 500.0;
+    }
+
+    double getPrice() const override {
+        return price;
+    }
+
+    double getWeight() const override {
+        return 0.0; // Exercise Bike does not have weight
+    }
+};
+
 void testDumbbell() {
     GymEquipment* db1 = nullptr;
     try {
@@ -69,12 +109,11 @@ void testDumbbell() {
         return;
     }
 
-    GymEquipment* db2 = nullptr;
     try {
-        db2 = new Dumbbell(25);
+        GymEquipment* db2 = new Dumbbell(25);
         assert(false);
-    } catch (const invalid_argument& e) {
         delete db2;
+    } catch (const invalid_argument& e) {
     }
 
     delete db1;
@@ -82,32 +121,64 @@ void testDumbbell() {
 }
 
 void testBarbell() {
-    GymEquipment* bb1 = nullptr;
     try {
-        bb1 = new Barbell(30);
+        GymEquipment* bb1 = new Barbell(30);
         assert(bb1->getPrice() == 60.0);
         assert(bb1->getWeight() == 30);
+        delete bb1;
     } catch (const invalid_argument& e) {
         cerr << "Exception caught: " << e.what() << endl;
-        if (bb1) delete bb1;
-        return;
-    }
-
-    GymEquipment* bb2 = nullptr;
-    try {
-        bb2 = new Barbell(55);
         assert(false);
-    } catch (const invalid_argument& e) {
-        delete bb2;
     }
 
-    delete bb1;
+    try {
+        GymEquipment* bb2 = new Barbell(55);
+        assert(false);
+        delete bb2;
+    } catch (const invalid_argument& e) {
+    }
+
     cout << "Barbell tests passed!" << endl;
+}
+
+void testTreadmill() {
+    try {
+        GymEquipment* tm = new Treadmill();
+        assert(tm->getPrice() == 1000.0);
+        delete tm;
+    } catch (const invalid_argument& e) {
+        cerr << "Exception caught: " << e.what() << endl;
+        assert(false);
+    }
+
+    cout << "Treadmill tests passed!" << endl;
+}
+
+void testExerciseBike() {
+    try {
+        GymEquipment* eb1 = new ExerciseBike(2);
+        assert(eb1->getPrice() == 1000.0);
+        delete eb1;
+    } catch (const invalid_argument& e) {
+        cerr << "Exception caught: " << e.what() << endl;
+        assert(false);
+    }
+
+    try {
+        GymEquipment* eb2 = new ExerciseBike(4);
+        assert(false);
+        delete eb2;
+    } catch (const invalid_argument& e) {
+    }
+
+    cout << "Exercise Bike tests passed!" << endl;
 }
 
 int main() {
     testDumbbell();
     testBarbell();
+    testTreadmill();
+    testExerciseBike();
 
     cout << "All tests passed!" << endl;
     return 0;
