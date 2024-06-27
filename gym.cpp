@@ -97,10 +97,53 @@ public:
     }
 };
 
+class GymPlan {
+protected:
+    vector<GymEquipment*> equipment;
+public:
+    virtual ~GymPlan() {
+        for (GymEquipment* eq : equipment) {
+            delete eq;
+        }
+    }
+
+    double getTotalPrice() const {
+        double total = 0.0;
+        for (const GymEquipment* eq : equipment) {
+            total += eq->getPrice();
+        }
+        return total;
+    }
+
+    virtual GymPlan* makePlan() = 0;
+};
+
+class BasicPlan : public GymPlan {
+public:
+    BasicPlan* makePlan() override {
+        equipment.push_back(new Dumbbell(10));
+        equipment.push_back(new Dumbbell(10));
+        equipment.push_back(new ExerciseBike(1));
+        return this;
+    }
+};
+
+class AdvancedPlan : public GymPlan {
+public:
+    AdvancedPlan* makePlan() override {
+        equipment.push_back(new Dumbbell(15));
+        equipment.push_back(new Dumbbell(15));
+        equipment.push_back(new Barbell(40));
+        equipment.push_back(new Treadmill());
+        equipment.push_back(new ExerciseBike(3));
+        return this;
+    }
+};
+
 void testDumbbell() {
     GymEquipment* db1 = nullptr;
     try {
-        db1 = new Dumbbell(15);
+        GymEquipment* db1 = new Dumbbell(15);
         assert(db1->getPrice() == 30.0);
         assert(db1->getWeight() == 15);
     } catch (const invalid_argument& e) {
@@ -174,11 +217,31 @@ void testExerciseBike() {
     cout << "Exercise Bike tests passed!" << endl;
 }
 
+
+
+void testBasicPlan() {
+    GymPlan* plan = new BasicPlan();
+    plan = plan->makePlan();
+    assert(plan->getTotalPrice() == 540.0);
+    delete plan;
+    cout << "BasicPlan tests passed!" << endl;
+}
+
+void testAdvancedPlan() {
+    GymPlan* plan = new AdvancedPlan();
+    plan = plan->makePlan();
+    assert(plan->getTotalPrice() == 2640.0);
+    delete plan;
+    cout << "AdvancedPlan tests passed!" << endl;
+}
+
 int main() {
     testDumbbell();
     testBarbell();
     testTreadmill();
     testExerciseBike();
+    testBasicPlan();
+    testAdvancedPlan();
 
     cout << "All tests passed!" << endl;
     return 0;
